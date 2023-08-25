@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div>
+    <div class="container">
+        <div class="panel panel-default">
+        <form method="post" id="formCrt">
+          <div class="panel-body">
+            {% for field in form %}
+                <label>{{ field.label }}</label>
+                    {{ field }}
+                <span style="color: red">{{ field.errors.0 }}</span>
+              {% endfor %}
+          </div>
+            <button id="btnAdd" type="submit" class="btn btn-default" >提 交</button>
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function (){
+            bindBtnAdd();
+        })
+
+        function bindBtnAdd(){
+            $('#btnAdd').click(function (){
+                $.ajax({
+                    url:"/create/" + "?uid" + $(this).attr('uid'),
+                    type:"post",
+                    data:$('#formCrt').serialize(),
+                    dataType:"JSON",
+                    success:function (res){
+                        if(res.status){
+                            alert("提交成功");
+                        }else{
+                            alert(res.error)
+                        }
+
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}

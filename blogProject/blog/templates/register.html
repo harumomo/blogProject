@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div>
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">用户注册</div>
+              <div class="panel-body">
+              <form id="formRgs">
+                {% for field in form %}
+                    <div>
+                    <label>{{ field.label }}</label>
+                    {{ field }}
+                    <span style="margin-bottom: 20px; color: red">{{ field.errors.0 }}</span>
+                    </div>
+                {% endfor %}
+              </form>
+                <button type="submit" class="btn btn-default btnRgs" style="margin: 20px" >注 册</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        $(function (){
+            bindBtnRgs();
+        })
+
+        function bindBtnRgs(){
+            $('.btnRgs').click(function (){
+                $.ajax({
+                    url:"/register/",
+                    type:"post",
+                    data:$('#formRgs').serialize(),
+                    dataType: "JSON",
+                    success:function (res){
+                        console.log(res)
+                        if(res.status){
+                            alert("注册成功");
+                            window.location = '/blog/';
+                        }else{
+                            $.each(res.error,function (name, errorList){
+                                $("#id_"+name).next().text(errorList[0]);
+                            })
+                        }
+                    }
+                })
+            });
+        }
+
+    </script>
+{% endblock %}
