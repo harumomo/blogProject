@@ -27,5 +27,7 @@ urlpatterns = [
     path('blog/', views.blog),
     path('create/', views.create),
     path('show/<int:nid>', views.show),
+    path('user/', views.user),
+
 
 ]

@@ -10,6 +10,8 @@ class UserInfo(models.Model):
     choice = ((1, '男'), (2, '女'), (3, '保密'))
     sex = models.IntegerField("性别", choices=choice, default=3)
     age = models.IntegerField("年龄", default=0)
+    choice2 = ((1, '是'), (2, '否'))
+    status = models.IntegerField("是否为管理员", choices=choice2, default=2)
 
     def __str__(self):
         return self.username

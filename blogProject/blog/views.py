@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.db.models import Q
+from django.shortcuts import render, redirect, HttpResponse
 from blog import models
 from blog.utils.Form import BlogModelForm, RegisterModelForm, LoginForm
 from blog.utils.Pagination import Pagination
@@ -34,7 +35,7 @@ def login(request):
             form.add_error("password", "用户名或密码错误，未注册请先注册。")
             return render(request, 'login.html', {'form': form})
         # 用户认证成功，在session中存数据
-        request.session["info"] = {'id': row.id, 'username': row.username}
+        request.session["info"] = {'id': row.id, 'username': row.username, 'status': row.status}
         return redirect('/blog/')
     return render(request, 'login.html', {'form': form})
 
@@ -48,14 +49,19 @@ def logout(request):
 
 def blog(request):
     """博客全部文章展示"""
-    # models.UserInfo.objects.create(username='admin', password='123456')
-    # for i in range(10):
-    #     models.Blog.objects.create(
-    #         title='测试标题' + str(i),
-    #         context='这是测试数据' + str(i),
-    #         user_id=1
-    #     )
     if request.method == 'GET':
+        search_data = request.GET.get('search')
+        if search_data:
+            search_data = models.Blog.objects.filter(Q(title=search_data) | Q(context__contains=search_data))
+            page = Pagination(request, search_data)
+            queryset = page.page_queryset
+            page_string = page.html()
+            context = {
+                'data': queryset,
+                'page_string': page_string
+            }
+            return render(request, 'blog.html', context)
+        # 没有搜索值执行
         queryset = models.Blog.objects.all().order_by("-id")
         page = Pagination(request, queryset)
         queryset = page.page_queryset
@@ -86,3 +92,18 @@ def show(request, nid):
     """展示博客"""
     blog_data = models.Blog.objects.filter(id=nid).first()
     return render(request, 'show.html', {'blog': blog_data})
+
+
+def user(request):
+    """用户管理"""
+    userinfo = models.UserInfo.objects.all().order_by("-id")
+    page = Pagination(request, userinfo)
+    queryset = page.page_queryset
+    page_string = page.html()
+    form = RegisterModelForm()
+    context = {
+        'form': form,
+        'queryset': queryset,
+        'page_string': page_string
+    }
+    return render(request, 'userlist.html', context)
