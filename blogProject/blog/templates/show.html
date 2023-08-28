@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div>
+    <div class="container">
+        <div class="panel panel-default" >
+              <div class="panel-body" >
+                  <div class="container">
+                     <h2>{{ blog.title }}</h2>
+                      <h6>作 者：{{ blog.user }}
+                      <span style="margin: 40px">发布时间：{{ blog.datetime }}</span>
+                      </h6>
+
+                  </div>
+                  <div class="container">
+                     <h4>{{ blog.context }}</h4>
+                  </div>
+              </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

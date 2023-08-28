@@ -26,5 +26,6 @@ urlpatterns = [
     path('logout/', views.logout),
     path('blog/', views.blog),
     path('create/', views.create),
+    path('show/<int:nid>', views.show),
 
 ]

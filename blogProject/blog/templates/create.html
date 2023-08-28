@@ -4,16 +4,18 @@
 <div>
     <div class="container">
         <div class="panel panel-default">
-        <form method="post" id="formCrt">
+        <form id="formCrt">
           <div class="panel-body">
             {% for field in form %}
+                <div style="margin-bottom: 10px">
                 <label>{{ field.label }}</label>
                     {{ field }}
                 <span style="color: red">{{ field.errors.0 }}</span>
+                </div>
               {% endfor %}
           </div>
-            <button id="btnAdd" type="submit" class="btn btn-default" >提 交</button>
         </form>
+          <button id="btnAdd" type="submit" class="btn btn-default" style="margin: 15px">提 交</button>
         </div>
     </div>
 </div>
@@ -28,15 +30,20 @@
         function bindBtnAdd(){
             $('#btnAdd').click(function (){
                 $.ajax({
-                    url:"/create/" + "?uid" + $(this).attr('uid'),
+                    url:"/create/",
                     type:"post",
                     data:$('#formCrt').serialize(),
                     dataType:"JSON",
                     success:function (res){
                         if(res.status){
                             alert("提交成功");
+                            //提交成功后清空列表
+                            $("#formCrt")[0].reset();
+                            window.location = '/create/';
                         }else{
-                            alert(res.error)
+                            $.each(res.error,function (name, errorList){
+                                $("#id_"+name).next().text(errorList[0]);
+                            })
                         }
 
                     }

@@ -67,6 +67,7 @@ def blog(request):
         return render(request, 'blog.html', context)
 
 
+@csrf_exempt
 def create(request):
     """写博客"""
     if request.method == "GET":
@@ -74,7 +75,14 @@ def create(request):
         return render(request, 'create.html', {'form': form})
     form = BlogModelForm(data=request.POST)
     if form.is_valid():
+        # 添加用户UID
+        form.instance.user_id = request.session['info']['id']
         form.save()
         return JsonResponse({'status': True})
-    return JsonResponse({'status': True, 'error': "提交失败"})
+    return JsonResponse({'status': False, 'error': form.errors})
 
+
+def show(request, nid):
+    """展示博客"""
+    blog_data = models.Blog.objects.filter(id=nid).first()
+    return render(request, 'show.html', {'blog': blog_data})

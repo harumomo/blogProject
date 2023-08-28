@@ -4,9 +4,9 @@
 <div>
     <div class="container">
         {% for list in data %}
-            <div class="panel panel-default">
-              <div class="panel-body">
-                <h2><a>{{ list.title }}</a></h2>
+            <div class="panel panel-default" >
+              <div class="panel-body" >
+                <h2><a href="/show/{{ list.id }}">{{ list.title }}</a></h2>
                   <h4>{{ list.context }}</h4>
                   <h6>{{ list.user }}<span >  {{ list.datetime }}</span></h6>
               </div>
