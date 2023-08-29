@@ -22,6 +22,8 @@ class Blog(models.Model):
     context = models.TextField("内容")
     user = models.ForeignKey(verbose_name="作者", to=UserInfo, on_delete=models.CASCADE)
     datetime = models.DateTimeField("发布时间", default=datetime.now)
+    choice = ((1, '锁'), (2, '非锁'))
+    status = models.IntegerField("状态", choices=choice, default=2)
 
     def __str__(self):
         return self.title

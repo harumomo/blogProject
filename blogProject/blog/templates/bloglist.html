@@ -2,21 +2,18 @@
 {% block content %}
 <div>
     <div class="container">
-        <div style="margin-bottom: 10px">
-            <input id="btnAdd" type="button" value="新建" class="btn btn-success" style="margin-bottom: 20px" class="button" >
-            <span>
+        <div style="margin-bottom: 40px">
                 <!-- 搜索框 -->
             <div style="float: right; width: 300px" >
                 <form method="get">
                     <div class="input-group">
-                      <input type="text" name="search" class="form-control" value="{{ search }}" placeholder="搜用户名">
+                      <input type="text" name="search" class="form-control" value="{{ search }}" placeholder="搜标题">
                       <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">搜 索</button>
                       </span>
                     </div>
                   </form>
-                </div>
-            </span>
+            </div>
         </div>
 
                 <div class="panel panel-default">
@@ -38,11 +35,9 @@
                     {% for obj in queryset %}
                       <tr>
                         <th>{{ obj.id }}</th>
-                        <td>{{ obj.username }}</td>
-                        <td> ****** </td>
-                        <td>{{ obj.telephone }}</td>
-                        <td>{{ obj.get_sex_display }}</td>
-                        <td>{{ obj.age }}</td>
+                        <td>{{ obj.title }}</td>
+                        <td>{{ obj.user }}</td>
+                        <td>{{ obj.datetime }}</td>
                         <td>{{ obj.get_status_display }}</td>
                         <td>
                             <a class="btn btn-primary btn-xs btnEdit" uid="{{ obj.id }}">编辑</a>
@@ -53,33 +48,32 @@
                     </tbody>
                   </table>
                 </div>
-    </div>
-    <!--新建、编辑弹窗-->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">新建</h4>
-          </div>
-          <div class="modal-body">
-            <form id="formAdd">
-              {% for field in form %}
-                  <div>
-                  <label>{{ field.label }}</label>
-                  {{ field }}
-                  <span id="err_msg" style="margin-bottom: 20px;color: red">{{ field.errors.0 }}</span>
+                <!--新建、编辑弹窗-->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">新建</h4>
+                      </div>
+                      <div class="modal-body">
+                        <form id="formAdd">
+                          {% for field in form %}
+                              <div>
+                              <label>{{ field.label }}</label>
+                              {{ field }}
+                              <span id="err_msg" style="margin-bottom: 20px;color: red">{{ field.errors.0 }}</span>
+                            </div>
+                          {% endfor %}
+                        </form>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
+                        <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              {% endfor %}
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
-            <button id="btnSave" type="button" class="btn btn-primary">保 存</button>
-          </div>
-        </div>
-      </div>
-    </div>
         <!--分页-->
         <div class="container">
             <ul class="pagination">
@@ -93,20 +87,10 @@
     <script type="text/javascript">
         var EDIT_ID = 0
         $(function (){
-            bindBtnAdd();
             bindBtnSave();
             bindBtnEdit();
             bindBtnDelete();
         })
-
-        function bindBtnAdd(){
-            $('#btnAdd').click(function (){
-                EDIT_ID = 0;
-                //展开弹窗
-                $('#myModalLabel').text("新建");
-                $('#myModal').modal('show');
-            })
-        }
 
         function bindBtnSave(){
             $("#btnSave").click(function (){
@@ -116,7 +100,7 @@
                 if(EDIT_ID){
                     //保存编辑的信息
                         $.ajax({
-                            url:'/user/edit/' + '?uid=' + EDIT_ID,
+                            url:'/blog/edit/' + '?uid=' + EDIT_ID,
                             type:"post",
                             data:$("#formAdd").serialize(),
                             dataType:"JSON",
@@ -125,7 +109,7 @@
                                     //提交成功，关闭弹窗，刷新页面
                                     alert("提交成功");
                                     $("#myModal").modal('hide');
-                                    window.location = '/user/';
+                                    window.location = '/blog/list/';
                                 }else {
                                     //提交失败，展示错误信息
                                     $.each(res.error, function (name, errorList){
@@ -134,30 +118,6 @@
                                 }
                             }
                         })
-                }else {
-                    //保存新建的信息
-                    $("#btnSave").click(function (){
-                    $.ajax({
-                    url:'/user/add/',
-                    type:"post",
-                    data:$('#formAdd').serialize(),
-                    dataType:"JSON",
-                    success:function (res){
-                        if(res.status){
-                            //提交成功,弹出提示框,清空表单,关闭新建弹窗
-                            alert("提交成功");
-                            $('#formAdd')[0].reset();
-                            $('#myModal').modal('hide');
-                            window.location = '/user/';
-                        }else{
-                            //提交失败,显示错误信息
-                            $.each(res.error,function (name, errorList){
-                                $('#id_' + name).next().text(errorList[0])
-                            })
-                        }
-                    }
-                    })
-                })
                 }
             })
         }
@@ -167,7 +127,7 @@
                 EDIT_ID = $(this).attr('uid');
                 //console.log(EDIT_ID)
                 $.ajax({
-                    url:'/user/get/',
+                    url:'/blog/get/',
                     type: "get",
                     data: {'uid':EDIT_ID},
                     dataType: "JSON",
@@ -190,14 +150,14 @@
         function bindBtnDelete(){
             $(".btnDelete").click(function (){
                 $.ajax({
-                    url:'/user/delete/',
+                    url:'/blog/delete/',
                     type:"get",
                     data:{'uid': $(this).attr("uid")},
                     dataType:"JSON",
                     success:function (res){
                         if(res.status){
                             //成功提示，刷新页面
-                            window.location = '/user/';
+                            window.location = '/blog/list/';
                             alert("删除成功！");
                         }
                     }

@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import render, redirect, HttpResponse
 from blog import models
-from blog.utils.Form import BlogModelForm, RegisterModelForm, LoginForm
+from blog.utils.Form import BlogModelForm, RegisterModelForm, LoginForm, BlogListModelForm
 from blog.utils.Pagination import Pagination
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -62,7 +62,7 @@ def blog(request):
             }
             return render(request, 'blog.html', context)
         # 没有搜索值执行
-        queryset = models.Blog.objects.all().order_by("-id")
+        queryset = models.Blog.objects.filter(status=2).order_by("-id")
         page = Pagination(request, queryset)
         queryset = page.page_queryset
         page_string = page.html()
@@ -96,7 +96,11 @@ def show(request, nid):
 
 def user(request):
     """用户管理"""
-    userinfo = models.UserInfo.objects.all().order_by("-id")
+    data_dict = {}
+    value = request.GET.get('search', "")
+    if value:
+        data_dict["username__contains"] = value
+    userinfo = models.UserInfo.objects.filter(**data_dict).order_by("-id")
     page = Pagination(request, userinfo)
     queryset = page.page_queryset
     page_string = page.html()
@@ -107,3 +111,89 @@ def user(request):
         'page_string': page_string
     }
     return render(request, 'userlist.html', context)
+
+
+@csrf_exempt
+def user_add(request):
+    """新建用户"""
+    form = RegisterModelForm(data=request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'status': True})
+    return JsonResponse({'status': False, 'error': form.errors})
+
+
+def user_get(request):
+    """获取指定用户数据"""
+    uid = request.GET.get('uid')
+    data = models.UserInfo.objects.filter(id=uid).values(
+        "username", "password", "telephone", "sex", "age", "status"
+    ).first()
+    context = {'status': True, 'data': data}
+    return JsonResponse(context)
+
+
+@csrf_exempt
+def user_edit(request):
+    """编辑用户信息"""
+    uid = request.GET.get('uid')
+    row = models.UserInfo.objects.filter(id=uid).first()
+    form = RegisterModelForm(data=request.POST, instance=row)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'status': True})
+    return JsonResponse({'status': False, 'error': form.errors})
+
+
+def user_delete(request):
+    """删除用户数据"""
+    uid = request.GET.get('uid')
+    models.UserInfo.objects.filter(id=uid).delete()
+    return JsonResponse({'status': True})
+
+
+def blog_list(request):
+    """博客管理"""
+    data_dict = {}
+    value = request.GET.get('search', "")
+    if value:
+        data_dict["title__contains"] = value
+    queryset = models.Blog.objects.filter(**data_dict).order_by("-id")
+    form = BlogListModelForm()
+    page = Pagination(request, queryset)
+    queryset = page.page_queryset
+    page_string = page.html()
+    context = {
+        'form': form,
+        'queryset': queryset,
+        'page_string': page_string
+    }
+    return render(request, 'bloglist.html', context)
+
+
+def blog_get(request):
+    """获取指定博客数据"""
+    uid = request.GET.get('uid')
+    row = models.Blog.objects.filter(id=uid).values(
+        "title", "user", "context", "datetime", "status"
+    ).first()
+    context = {'status': True, 'data': row}
+    return JsonResponse(context)
+
+@csrf_exempt
+def blog_edit(request):
+    """编辑博客"""
+    uid = request.GET.get('uid')
+    row = models.Blog.objects.filter(id=uid).first()
+    form = BlogListModelForm(data=request.POST, instance=row)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'status': True})
+    return JsonResponse({'status': False, 'error': form.errors})
+
+
+def blog_delete(request):
+    """删除博客"""
+    uid = request.GET.get('uid')
+    models.Blog.objects.filter(id=uid).delete()
+    return JsonResponse({'status': True})

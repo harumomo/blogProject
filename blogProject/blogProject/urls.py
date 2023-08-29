@@ -28,6 +28,14 @@ urlpatterns = [
     path('create/', views.create),
     path('show/<int:nid>', views.show),
     path('user/', views.user),
+    path('user/add/', views.user_add),
+    path('user/get/', views.user_get),
+    path('user/edit/', views.user_edit),
+    path('user/delete/', views.user_delete),
+    path('blog/list/', views.blog_list),
+    path('blog/get/', views.blog_get),
+    path('blog/edit/', views.blog_edit),
+    path('blog/delete/', views.blog_delete),
 
 
 ]
