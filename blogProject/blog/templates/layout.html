@@ -30,7 +30,7 @@
           <ul class="nav navbar-nav">
             <li ><a href="/create/">写博客</a></li>
           </ul>
-            {% if request.session.info.status %}
+            {% if request.session.info.status == 1 %}
                 <!--只有管理员能看见-->
               <ul class="nav navbar-nav">
                 <li ><a href="/user/">用户管理</a></li>

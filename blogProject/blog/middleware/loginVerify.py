@@ -6,7 +6,7 @@ class Verify(MiddlewareMixin):
     """验证用户是否登录"""
     def process_request(self, request):
         # 只有写博客需要验证登录
-        if request.path_info == "/create/":
+        if request.path_info in ("/create/", "/show/"):
             info = request.session.get("info")
             if info:
                 return

@@ -91,7 +91,18 @@ def create(request):
 def show(request, nid):
     """展示博客"""
     blog_data = models.Blog.objects.filter(id=nid).first()
-    return render(request, 'show.html', {'blog': blog_data})
+    form = models.Comment.objects.filter(blog_id=nid).order_by("-id")
+    return render(request, 'show.html', {'blog': blog_data, 'form': form})
+
+
+@csrf_exempt
+def comment(request):
+    """提交评论"""
+    uid = request.GET.get('uid')
+    blog_id = request.GET.get('blog')
+    com = request.POST.get('context')
+    models.Comment.objects.create(user_id=uid, blog_id=blog_id, comment=com)
+    return JsonResponse({'status': True})
 
 
 def user(request):

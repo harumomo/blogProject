@@ -42,3 +42,4 @@ class BlogListModelForm(BootStrap, ModelForm):
     class Meta:
         model = models.Blog
         exclude = ["context"]
+

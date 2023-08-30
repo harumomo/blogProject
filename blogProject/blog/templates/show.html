@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
 <div>
-    <div class="container">
+    <div class="container" >
         <div class="panel panel-default" >
               <div class="panel-body" >
                   <div class="container">
@@ -16,6 +16,60 @@
                   </div>
               </div>
         </div>
+        <!--添加评论-->
+        <div>
+            <form id="formCmm"  >
+            <textarea name="context" cols="40" rows="7" class="form-control" placeholder="在这里写下评论..." required="" id="id_context"></textarea>
+            <span id="err_msg" style="margin-bottom: 20px;color: red"></span>
+            </form>
+            <input id="btnCmm" type="button" uid="{{ request.session.info.id }}"
+                   blog="{{ blog.id }}" value="评论" style="margin-bottom: 20px"
+                   class="btn btn-primary btn-lg btn-block"  >
+        </div>
+        <!--显示评论-->
+        <div>
+            {% for feild in form %}
+            <div class="panel panel-default" >
+              <div class="panel-body" >
+                  <h5>{{ feild.user }}:</h5>
+                  <h6>{{ feild.comment }}</h6>
+                  <span style="float: right">{{ feild.datetime }}</span>
+              </div>
+            </div>
+            {% endfor %}
+        </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function (){
+            bindBtnCmm();
+        })
+
+        function bindBtnCmm(){
+            $("#btnCmm").click(function (){
+                var blog_id = $(this).attr('blog')
+                $.ajax({
+                    url:'/comment/' + '?uid=' + $(this).attr('uid') + '&&blog=' + blog_id ,
+                    type:"post",
+                    data:$("#formCmm").serialize(),
+                    dataType:"JSON",
+                    success:function (res){
+                        if(res.status){
+                            //评论成功并刷新当前页面
+                            alert("success")
+                            window.location.href = window.location.href
+                        }else {
+                            $("#err_msg").text("评论失败")
+                        }
+                    }
+                })
+            })
+        }
+
+    </script>
 {% endblock %}
