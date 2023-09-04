@@ -1,6 +1,8 @@
 
 
-Uploading blogProject.mp4…
+
+https://github.com/qcsmbfl/blogProject/assets/59965650/7b11f735-060e-4394-b4d7-5057c38ab29c
+
 
 # blogProject
 # 一个简单的博客项目，有登录注册，写博客，查看博客并评论，用户管理，博客管理功能
