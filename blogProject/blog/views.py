@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import render, redirect, HttpResponse
 from blog import models
-from blog.utils.Form import BlogModelForm, RegisterModelForm, LoginForm, BlogListModelForm
+from blog.utils.Form import BlogModelForm, RegisterModelForm, LoginForm, BlogListModelForm, UserListModelForm
 from blog.utils.Pagination import Pagination
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -52,7 +52,7 @@ def blog(request):
     if request.method == 'GET':
         search_data = request.GET.get('search')
         if search_data:
-            search_data = models.Blog.objects.filter(Q(title=search_data) | Q(context__contains=search_data))
+            search_data = models.Blog.objects.filter((Q(title=search_data) | Q(context__contains=search_data)) & Q(status=2))
             page = Pagination(request, search_data)
             queryset = page.page_queryset
             page_string = page.html()
@@ -115,7 +115,7 @@ def user(request):
     page = Pagination(request, userinfo)
     queryset = page.page_queryset
     page_string = page.html()
-    form = RegisterModelForm()
+    form = UserListModelForm()
     context = {
         'form': form,
         'queryset': queryset,
@@ -127,7 +127,7 @@ def user(request):
 @csrf_exempt
 def user_add(request):
     """新建用户"""
-    form = RegisterModelForm(data=request.POST)
+    form = UserListModelForm(data=request.POST)
     if form.is_valid():
         form.save()
         return JsonResponse({'status': True})
@@ -149,7 +149,7 @@ def user_edit(request):
     """编辑用户信息"""
     uid = request.GET.get('uid')
     row = models.UserInfo.objects.filter(id=uid).first()
-    form = RegisterModelForm(data=request.POST, instance=row)
+    form = UserListModelForm(data=request.POST, instance=row)
     if form.is_valid():
         form.save()
         return JsonResponse({'status': True})
