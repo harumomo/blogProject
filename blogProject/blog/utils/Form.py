@@ -19,6 +19,11 @@ class BootStrap:
 
 
 class RegisterModelForm(BootStrap, ModelForm):
+    password = forms.CharField(
+        label='密码',
+        max_length=32
+    )
+
     class Meta:
         model = models.UserInfo
         # 排除是否为管理员状态
@@ -38,12 +43,14 @@ class LoginForm(BootStrap, Form):
     )
     password = forms.CharField(
         label="密码",
-        widget=forms.PasswordInput
+        widget=forms.PasswordInput,
+        required=True
     )
 
     def clean_password(self):
         pwd = self.cleaned_data.get("password")
-        return md5(pwd)
+        self.cleaned_data["password"] = md5(pwd)
+        return self.cleaned_data["password"]
 
 
 class BlogModelForm(BootStrap, ModelForm):

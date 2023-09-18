@@ -26,6 +26,7 @@ def login(request):
     if request.method == "GET":
         form = LoginForm()
         return render(request, 'login.html', {'form': form})
+    print(request.POST)
     form = LoginForm(data=request.POST)
     # 非空验证
     if form.is_valid():
@@ -52,7 +53,7 @@ def blog(request):
     if request.method == 'GET':
         search_data = request.GET.get('search')
         if search_data:
-            search_data = models.Blog.objects.filter((Q(title=search_data) | Q(context__contains=search_data)) & Q(status=2))
+            search_data = models.Blog.objects.filter((Q(title__contains=search_data) | Q(context__contains=search_data)) & Q(status=2))
             page = Pagination(request, search_data)
             queryset = page.page_queryset
             page_string = page.html()

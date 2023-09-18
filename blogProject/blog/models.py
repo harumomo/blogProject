@@ -5,7 +5,7 @@ from datetime import datetime
 
 class UserInfo(models.Model):
     username = models.CharField("用户名", max_length=32)
-    password = models.CharField("密码", max_length=32)
+    password = models.CharField("密码", max_length=32, default='9cbfa35e512097e2c4bcc210ed8eee50')
     telephone = models.CharField("电话号码", max_length=11, default='')
     choice = ((1, '男'), (2, '女'), (3, '保密'))
     sex = models.IntegerField("性别", choices=choice, default=3)

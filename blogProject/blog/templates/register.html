@@ -35,7 +35,6 @@
                     data:$('#formRgs').serialize(),
                     dataType: "JSON",
                     success:function (res){
-                        console.log(res)
                         if(res.status){
                             alert("注册成功");
                             window.location = '/blog/';
